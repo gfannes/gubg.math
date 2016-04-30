@@ -29,8 +29,38 @@ namespace gubg {
                         MSS(right.size() == nr_cols_);
                         v = 0;
                         auto left_it = left.begin();
-                        for (auto it = elements_.begin(); it != elements_.end(); it += nr_cols_, ++left_it)
-                            v += (*left_it)*(std::inner_product(RANGE(right), it, TT(0)));
+                        for (auto el = elements_.begin(); el != elements_.end(); el += nr_cols_, ++left_it)
+                            v += (*left_it)*(std::inner_product(RANGE(right), el, TT(0)));
+                        MSS_END();
+                    }
+
+                template <typename Vector, typename Right>
+                    bool multiply(Vector &vec, const Right &right) const
+                    {
+                        MSS_BEGIN(bool);
+                        MSS(right.size() == nr_cols_);
+                        MSS(vec.size() == nr_rows_);
+                        auto vec_it = vec.begin();
+                        using V = typename Vector::value_type;
+                        for (auto el = elements_.begin(); el != elements_.end(); el += nr_cols_, ++vec_it)
+                            *vec_it = std::inner_product(RANGE(right), el, V(0));
+                        MSS_END();
+                    }
+
+                template <typename Vector, typename Left>
+                    bool multiply_trans(Vector &vec, const Left &left) const
+                    {
+                        MSS_BEGIN(bool);
+                        MSS(left.size() == nr_rows_);
+                        MSS(vec.size() == nr_cols_);
+                        using V = typename Vector::value_type;
+                        std::fill(RANGE(vec), V(0));
+                        for (auto el = elements_.begin(); el != elements_.end();)
+                        {
+                            auto dst = vec.begin();
+                            for (auto left_it = left.begin(); left_it != left.end(); ++left_it, ++dst, ++el)
+                                *dst += (*left_it)*(*el);
+                        }
                         MSS_END();
                     }
 
