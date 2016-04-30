@@ -29,7 +29,7 @@ namespace gubg {
                         MSS(right.size() == nr_cols_);
                         v = 0;
                         auto left_it = left.begin();
-                        for (auto it = elements_.begin(); it != elements_.end(); it += nr_cols_)
+                        for (auto it = elements_.begin(); it != elements_.end(); it += nr_cols_, ++left_it)
                             v += (*left_it)*(std::inner_product(RANGE(right), it, TT(0)));
                         MSS_END();
                     }
@@ -44,6 +44,7 @@ namespace gubg {
                 size_t nr_cols_ = 0;
 
                 using Elements = std::vector<T>;
+                //(elements_[row*nr_cols_], ... , elements_[(row+1)*nr_cols_-1]) is row row
                 Elements elements_;
         };
 
