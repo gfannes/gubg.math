@@ -8,13 +8,14 @@ namespace gubg {
     template <typename T>
         T sigmoid(T x)
         {
-            return T(1)/(T(1)+std::exp(-x));
+            return T{1}/(T{1}+std::exp(-x));
         }
 
     template <typename T>
         struct Sigmoid
         {
             T operator()(T x) const {return sigmoid(x);}
+            T derivative(T x) const {const auto v = operator()(x); return v*(T{1}-v)}
         };
 
 } 
