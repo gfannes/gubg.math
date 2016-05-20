@@ -15,7 +15,7 @@ namespace gubg {
         struct Sigmoid
         {
             T operator()(T x) const {return sigmoid(x);}
-            T derivative(T x) const {const auto v = operator()(x); return v*(T{1}-v)}
+            T derivative(T x) const {const auto v = operator()(x); return v*(T{1}-v);}
         };
 
 } 
