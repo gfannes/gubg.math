@@ -8,6 +8,9 @@ namespace gubg {
     template <typename T>
         struct Tanh
         {
+            using Input = T;
+            using Output = T;
+
             T operator()(T x) const {return std::tanh(x);}
             T derivative(T x) const {const auto v = operator()(x); return T{1} - v*v;}
         };
