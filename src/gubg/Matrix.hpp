@@ -5,6 +5,7 @@
 #include "gubg/mss.hpp"
 #include <vector>
 #include <algorithm>
+#include <ostream>
 
 namespace gubg { 
 
@@ -12,14 +13,59 @@ namespace gubg {
         class Matrix
         {
             public:
+                using Self = Matrix<T>;
+
                 Matrix() = default;
                 Matrix(size_t nr_rows, size_t nr_cols): nr_rows_(nr_rows), nr_cols_(nr_cols)
             {
                 allocate_();
             }
 
+                void resize(size_t nr_rows, size_t nr_cols)
+                {
+                    nr_rows_ = nr_rows;
+                    nr_cols_ = nr_cols;
+                    allocate_();
+                }
+
+                Self &operator=(const Self &rhs)
+                {
+                    nr_rows_ = rhs.nr_rows();
+                    nr_cols_ = rhs.nr_cols();
+                    elements_ = rhs.elements_;
+                }
+
+                bool add(const Self &rhs, T scalar)
+                {
+                    MSS_BEGIN(bool);
+                    MSS(nr_rows() == rhs.nr_rows());
+                    MSS(nr_cols() == rhs.nr_cols());
+                    for (size_t i = 0; i < elements_.size(); ++i)
+                        elements_[i] += scalar*rhs.elements_[i];
+                    MSS_END();
+                }
+
+                Self &scale(T scalar)
+                {
+                    for (auto &v: elements_)
+                        v += scalar;
+                    return *this;
+                }
+
+                bool inproduct(T &v, const Self &rhs)
+                {
+                    MSS_BEGIN(bool);
+                    MSS(nr_rows() == rhs.nr_rows());
+                    MSS(nr_cols() == rhs.nr_cols());
+                    v = 0;
+                    v = std::inner_product(RANGE(elements_), rhs.elements_.begin(), v);
+                    MSS_END();
+                }
+
                 size_t nr_rows() const {return nr_rows_;}
                 size_t nr_cols() const {return nr_cols_;}
+
+                void fill(T v) {std::fill(RANGE(elements_), v);}
 
                 template <typename TT, typename Left, typename Right>
                     bool multiply(TT &v, const Left &left, const Right &right) const
@@ -64,6 +110,17 @@ namespace gubg {
                         MSS_END();
                     }
 
+                void stream(std::ostream &os) const
+                {
+                    auto el = elements_.begin();
+                    for (size_t r = 0; r < nr_rows_; ++r)
+                    {
+                        for (size_t c = 0; c < nr_cols_; ++c, ++el)
+                            os << (c == 0 ? "" : ", ") << *el;
+                        os << std::endl;
+                    }
+                }
+
             private:
                 void allocate_()
                 {
@@ -77,6 +134,13 @@ namespace gubg {
                 //(elements_[row*nr_cols_], ... , elements_[(row+1)*nr_cols_-1]) is row row
                 Elements elements_;
         };
+
+    template <typename T>
+        std::ostream &operator<<(std::ostream &os, const Matrix<T> &m)
+        {
+            m.stream(os);
+            return os;
+        }
 
 } 
 
