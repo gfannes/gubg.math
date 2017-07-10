@@ -12,6 +12,7 @@ TEST_CASE("gubg::decay::Sum tests", "[ut][gubg][decay]")
         Sum<T> sum;
         SECTION("alpha == 0")
         {
+            REQUIRE(sum.alpha() == 0);
             REQUIRE(sum() == 0);
             REQUIRE(1 == (sum << 1));
             REQUIRE(2 == (sum << 2));
@@ -19,6 +20,7 @@ TEST_CASE("gubg::decay::Sum tests", "[ut][gubg][decay]")
         SECTION("alpha == 0.5")
         {
             REQUIRE(sum.setup(0.5));
+            REQUIRE(sum.alpha() == 0.5);
             REQUIRE(1 == (sum << 1));
             REQUIRE(2.5 == (sum << 2));
         }
@@ -34,6 +36,7 @@ TEST_CASE("gubg::decay::Sum tests", "[ut][gubg][decay]")
     SECTION("alpha == 0.5")
     {
         Sum<T> sum(0.5);
+        REQUIRE(sum.alpha() == 0.5);
         REQUIRE(sum() == 0);
         REQUIRE(1 == (sum << 1));
         REQUIRE(2.5 == (sum << 2));

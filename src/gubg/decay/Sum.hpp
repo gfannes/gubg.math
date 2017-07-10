@@ -12,6 +12,8 @@ namespace gubg { namespace decay {
         {
             setup(alpha);
         }
+        
+        T alpha() const {return alpha_;}
 
         bool setup(T alpha)
         {
