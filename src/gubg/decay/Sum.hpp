@@ -19,7 +19,7 @@ namespace gubg { namespace decay {
         {
             sum_ = T{};
 
-            if (alpha < 0 || alpha >= 1)
+            if (alpha < 0 || alpha > 1)
             {
                 alpha_ = T{};
                 return false;

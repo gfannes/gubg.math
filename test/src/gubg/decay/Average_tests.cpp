@@ -30,7 +30,7 @@ TEST_CASE("gubg::decay::Average tests", "[ut][gubg][decay]")
         }
         SECTION("alpha ge 1 should fail")
         {
-            REQUIRE(!avg.setup(1));
+            REQUIRE(!avg.setup(1+eps));
         }
     }
     SECTION("alpha == 0.5")

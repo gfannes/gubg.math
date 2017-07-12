@@ -30,7 +30,7 @@ TEST_CASE("gubg::decay::Sum tests", "[ut][gubg][decay]")
         }
         SECTION("alpha ge 1 should fail")
         {
-            REQUIRE(!sum.setup(1));
+            REQUIRE(!sum.setup(1+eps));
         }
     }
     SECTION("alpha == 0.5")
