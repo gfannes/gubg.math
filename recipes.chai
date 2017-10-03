@@ -1,8 +1,10 @@
-recipe("gubg.math", "func", fun(r){
-    r.add_header("src", "gubg/**.hpp")
-    r.add_source("src", "gubg/**.cpp")
-})
+add_book("gubg.math", fun(b){
+    b.add_recipe("func", fun(r){
+        r.add_header("src", "gubg/**.hpp")
+        r.add_source("src", "gubg/**.cpp")
+    })
 
-recipe("gubg.math", "ut", fun(r){
-    r.add_source("test/src", "gubg/**.cpp")
+    b.add_recipe("ut", fun(r){
+        r.add_source("test/src", "gubg/**.cpp")
+    })
 })
