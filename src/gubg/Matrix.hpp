@@ -5,6 +5,7 @@
 #include "gubg/mss.hpp"
 #include <vector>
 #include <algorithm>
+#include <numeric>
 #include <ostream>
 
 namespace gubg { 
@@ -52,7 +53,7 @@ namespace gubg {
                     return *this;
                 }
 
-                bool inproduct(T &v, const Self &rhs)
+                bool inproduct(T &v, const Self &rhs) const
                 {
                     MSS_BEGIN(bool);
                     MSS(nr_rows() == rhs.nr_rows());
@@ -66,6 +67,9 @@ namespace gubg {
                 size_t nr_cols() const {return nr_cols_;}
 
                 void fill(T v) {std::fill(RANGE(elements_), v);}
+
+                T get(size_t rix, size_t cix) const {return elements_[rix*nr_cols_+cix];}
+                void set(size_t rix, size_t cix, T v) {elements_[rix*nr_cols_+cix] = v;}
 
                 template <typename TT, typename Left, typename Right>
                     bool multiply(TT &v, const Left &left, const Right &right) const
@@ -109,6 +113,14 @@ namespace gubg {
                         }
                         MSS_END();
                     }
+
+                T sum_squares() const
+                {
+                    T ss = 0.0;
+                    for (auto v: elements_)
+                        ss += v*v;
+                    return ss;
+                }
 
                 void stream(std::ostream &os) const
                 {
