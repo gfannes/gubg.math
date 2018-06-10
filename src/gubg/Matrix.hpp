@@ -34,6 +34,7 @@ namespace gubg {
                     nr_rows_ = rhs.nr_rows();
                     nr_cols_ = rhs.nr_cols();
                     elements_ = rhs.elements_;
+                    return *this;
                 }
 
                 bool add(const Self &rhs, T scalar)
