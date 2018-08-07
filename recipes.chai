@@ -8,6 +8,6 @@ root.book("gubg/math", fun(b){
     b.recipe("ut", fun(r){
         r.add("test/src", "**.cpp")
         r.depends_on("func")
-        r.depends_on("/catch/runner")
+        r.depends_on("/catch/func")
     })
 })
