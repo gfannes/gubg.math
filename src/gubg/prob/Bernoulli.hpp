@@ -10,16 +10,15 @@ namespace gubg { namespace prob {
     {
     public:
         Bernoulli() {}
-        Bernoulli(double prob1): prob1_(prob1) {}
+        Bernoulli(double prob_true): prob_true_(prob_true) {}
 
-        unsigned int draw() const
-        {
-            return uniform_(rng()) < prob1_ ? 0 : 1;
-        }
+        void set_prob(double prob_true) {prob_true_ = prob_true;}
+
+        bool operator()() const { return uniform_(rng()) <= prob_true_; }
 
     private:
-        double prob1_ = 0.5;
-        const std::uniform_real_distribution<double> uniform_{0.0, 1.0};
+        double prob_true_ = 0.5;
+        mutable std::uniform_real_distribution<double> uniform_{0.0, 1.0};
     };
 
 } } 
