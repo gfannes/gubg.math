@@ -25,10 +25,17 @@ namespace gubg { namespace prob {
     };
 
     template <typename T>
-    T &select_uniform(std::vector<T> &vec)
+    T &select_uniform(std::vector<T> &vec, bool seed_with_time = false)
     {
-        std::uniform_int_distribution<unsigned int> uniform{0, vec.size()-1};
-        return vec[uniform(rng())];
+        std::uniform_int_distribution<std::size_t> uniform(0, vec.size()-1);
+        return vec[uniform(rng(seed_with_time))];
+    }
+
+    template <typename T, typename RNG>
+    T &select_uniform(std::vector<T> &vec, RNG &rng)
+    {
+        std::uniform_int_distribution<std::size_t> uniform(0, vec.size()-1);
+        return vec[uniform(rng)];
     }
 
 } } 

@@ -5,7 +5,7 @@
 
 namespace gubg { namespace prob { 
 
-    std::mt19937 &rng();
+    std::mt19937 &rng(bool seed_with_time = false);
 
 } } 
 
