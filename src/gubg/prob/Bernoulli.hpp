@@ -21,6 +21,20 @@ namespace gubg { namespace prob {
         mutable std::uniform_real_distribution<double> uniform_{0.0, 1.0};
     };
 
+    template <typename T>
+    T &choose(T &a, T &b, double prob_a, bool seed_with_time = false)
+    {
+        std::uniform_real_distribution<double> uniform{0.0, 1.0};
+        return uniform(rng(seed_with_time)) <= prob_a ? a : b;
+    }
+
+    template <typename T, typename RNG>
+    T &choose(T &a, T &b, double prob_a, RNG &rng)
+    {
+        std::uniform_real_distribution<double> uniform{0.0, 1.0};
+        return uniform(rng) <= prob_a ? a : b;
+    }
+
 } } 
 
 #endif

@@ -20,6 +20,13 @@ namespace gubg { namespace prob {
             return uniform(rng());
         }
 
+        template <typename RNG>
+        unsigned int operator()(RNG &rng) const
+        {
+            std::uniform_int_distribution<unsigned int> uniform{0, count_-1};
+            return uniform(rng);
+        }
+
     private:
         unsigned int count_ = 0;
     };
