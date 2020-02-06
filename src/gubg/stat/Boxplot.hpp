@@ -4,6 +4,7 @@
 #include <gubg/Range.hpp>
 #include <gubg/mss.hpp>
 #include <vector>
+#include <algorithm>
 #include <ostream>
 
 namespace gubg { namespace stat { 
@@ -24,67 +25,72 @@ namespace gubg { namespace stat {
             data_.push_back(v);
             return *this;
         }
-
-        bool calculate()
+        void process(double *begin, double *end)
         {
-            MSS_BEGIN(bool);
-
-            const auto size = data_.size();
-            MSS(size > 0);
-            std::sort(RANGE(data_));
-
-            const size_t q1ix = 0.25*size;
-            q1_ = data_[q1ix];
-
-            const size_t q2ix = 0.50*size;
-            median_ = data_[q2ix];
-
-            const size_t q3ix = 0.75*size;
-            q3_ = data_[q3ix];
-
-            const auto iqr = q3_-q1_;
-
-            min_ = q1_-1.5*iqr;
-            outliers_min_.clear();
-            for (auto ix = 0u; ix < q1ix; ++ix)
-            {
-                if (data_[ix] >= min_)
-                {
-                    min_ = data_[ix];
-                    break;
-                }
-                outliers_min_.push_back(data_[ix]);
-            }
-
-            max_ = q3_+1.5*iqr;
-            outliers_max_.clear();
-            for (auto ix = size-1; ix > q2ix; --ix)
-            {
-                if (data_[ix] <= max_)
-                {
-                    max_ = data_[ix];
-                    break;
-                }
-                outliers_max_.push_back(data_[ix]);
-            }
-
-            MSS_END();
+            for (auto it = begin; it != end; ++it)
+                operator<<(*it);
         }
 
-        void stream(std::ostream &os) const
+        Boxplot &calculate()
         {
-            os << "[boxplot]{" << std::endl;
+            const auto size = data_.size();
+            if (size > 0)
+            {
+                std::sort(RANGE(data_));
+
+                const size_t q1ix = 0.25*size;
+                q1_ = data_[q1ix];
+
+                const size_t q2ix = 0.50*size;
+                median_ = data_[q2ix];
+
+                const size_t q3ix = 0.75*size;
+                q3_ = data_[q3ix];
+
+                const auto iqr = q3_-q1_;
+
+                min_ = q1_-1.5*iqr;
+                outliers_min_.clear();
+                for (auto ix = 0u; ix < q1ix; ++ix)
+                {
+                    if (data_[ix] >= min_)
+                    {
+                        min_ = data_[ix];
+                        break;
+                    }
+                    outliers_min_.push_back(data_[ix]);
+                }
+
+                max_ = q3_+1.5*iqr;
+                outliers_max_.clear();
+                for (auto ix = size-1; ix > q2ix; --ix)
+                {
+                    if (data_[ix] <= max_)
+                    {
+                        max_ = data_[ix];
+                        break;
+                    }
+                    outliers_max_.push_back(data_[ix]);
+                }
+            }
+            return *this;
+        }
+
+        void stream(std::ostream &os, bool with_outliers = false) const
+        {
+            os << "[boxplot](size:" << data_.size() << "){" << std::endl;
             os << "  [box](q1:" << q1_ << ")(median:" << median_ << ")(q3:" << q3_ << ")" << std::endl;
             os << "  [whiskers](min:" << min_ << ")(max:" << max_ << ")" << std::endl;
-            if (!outliers_min_.empty() || !outliers_max_.empty())
-            {
-                os << "  [outliers]";
-                for (auto v: outliers_min_)
-                    os << "(min:" << v << ")";
-                for (auto v: outliers_max_)
-                    os << "(max:" << v << ")";
-                os << std::endl;
-            }
+            if (with_outliers)
+                if (!outliers_min_.empty() || !outliers_max_.empty())
+                {
+                    os << "  [outliers]";
+                    for (auto v: outliers_min_)
+                        os << "(min:" << v << ")";
+                    for (auto v: outliers_max_)
+                        os << "(max:" << v << ")";
+                    os << std::endl;
+                }
             os << "}" << std::endl;
         }
 
