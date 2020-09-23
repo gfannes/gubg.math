@@ -36,6 +36,11 @@ namespace gubg {
         template <typename Rhs>
         bool operator!=(const Rhs &rhs) const {return !operator==(rhs);}
 
+        template <typename Rhs>
+        Self &operator+=(const Rhs &rhs);
+        template <typename Rhs>
+        Self &operator-=(const Rhs &rhs);
+
         const std::size_t size() const {return size_;}
         const Dimensions &dimensions() const {return dimensions_;}
 
@@ -118,6 +123,25 @@ namespace gubg {
         for (auto ix = 0u; ix < size_; ++ix)
             same_data = same_data && (data_[ix] == rhs.data_[ix]);
         return same_data;
+    }
+
+    template <typename T>
+    template <typename Rhs>
+    typename Tensor<T>::Self &Tensor<T>::operator+=(const Rhs &rhs)
+    {
+        assert(dimensions_ == rhs.dimensions_);
+        for (auto ix = 0u; ix < size_; ++ix)
+            data_[ix] += rhs.data_[ix];
+        return *this;
+    }
+    template <typename T>
+    template <typename Rhs>
+    typename Tensor<T>::Self &Tensor<T>::operator-=(const Rhs &rhs)
+    {
+        assert(dimensions_ == rhs.dimensions_);
+        for (auto ix = 0u; ix < size_; ++ix)
+            data_[ix] -= rhs.data_[ix];
+        return *this;
     }
 
     template <typename T>

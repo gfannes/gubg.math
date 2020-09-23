@@ -35,13 +35,20 @@ TEST_CASE("Tensor tests", "[ut][Tensor]")
                 std::cout << t << std::endl;
         }
     }
-    SECTION("zeros()")
+    SECTION("zeros() small")
     {
         t = T::zeros({2,3});
         REQUIRE(t.size() == 6);
         if (do_log)
             std::cout << t << std::endl;
         REQUIRE(t == T({2,3}));
+    }
+    SECTION("zeros() large")
+    {
+        std::size_t n = 10000;
+        t = T::zeros({n,n});
+        REQUIRE(t.size() == n*n);
+        REQUIRE(t == T({n,n}));
     }
     SECTION("ones()")
     {
@@ -78,10 +85,26 @@ TEST_CASE("Tensor tests", "[ut][Tensor]")
     }
     SECTION("broadcast()")
     {
-        t = T::eye({2});
+        t = T::eye(2);
         t.broadcast([](int v){return 2*v;});
         if (do_log)
             std::cout << t << std::endl;
         REQUIRE(t == T({2,2}, {2,0, 0,2}));
+    }
+    SECTION("operator+=()")
+    {
+        t = T::eye(2);
+        t += T::ones({2,2});
+        if (do_log)
+            std::cout << t << std::endl;
+        REQUIRE(t == T({2,2}, {2,1, 1,2}));
+    }
+    SECTION("operator-=()")
+    {
+        t = T::eye(2);
+        t -= T::ones({2,2});
+        if (do_log)
+            std::cout << t << std::endl;
+        REQUIRE(t == T({2,2}, {0,-1, -1,0}));
     }
 }
