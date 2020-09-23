@@ -76,4 +76,12 @@ TEST_CASE("Tensor tests", "[ut][Tensor]")
             REQUIRE(t == T({2,3}, {0,0,0, 0,0,1}));
         }
     }
+    SECTION("broadcast()")
+    {
+        t = T::eye({2});
+        t.broadcast([](int v){return 2*v;});
+        if (do_log)
+            std::cout << t << std::endl;
+        REQUIRE(t == T({2,2}, {2,0, 0,2}));
+    }
 }
