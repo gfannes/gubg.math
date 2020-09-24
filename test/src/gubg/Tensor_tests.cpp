@@ -94,7 +94,8 @@ TEST_CASE("Tensor tests", "[ut][Tensor]")
     SECTION("operator+=()")
     {
         t = T::eye(2);
-        t += T::ones({2,2});
+        REQUIRE_NOTHROW(t += T::ones({2,2}));
+        REQUIRE_THROWS_AS(t += T::ones({2,3}), std::length_error);
         if (do_log)
             std::cout << t << std::endl;
         REQUIRE(t == T({2,2}, {2,1, 1,2}));
@@ -102,7 +103,8 @@ TEST_CASE("Tensor tests", "[ut][Tensor]")
     SECTION("operator-=()")
     {
         t = T::eye(2);
-        t -= T::ones({2,2});
+        REQUIRE_NOTHROW(t -= T::ones({2,2}));
+        REQUIRE_THROWS_AS(t -= T::ones({2,3}), std::length_error);
         if (do_log)
             std::cout << t << std::endl;
         REQUIRE(t == T({2,2}, {0,-1, -1,0}));

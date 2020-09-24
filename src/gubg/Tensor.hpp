@@ -3,6 +3,7 @@
 
 #include <gubg/tensor/types.hpp>
 #include <gubg/tensor/each.hpp>
+#include <gubg/tensor/str.hpp>
 
 #include <ostream>
 #include <algorithm>
@@ -135,7 +136,12 @@ namespace gubg {
     template <typename Rhs>
     typename Tensor<T>::Self &Tensor<T>::operator+=(const Rhs &rhs)
     {
-        assert(dimensions_ == rhs.dimensions_);
+        if (dimensions_ != rhs.dimensions_)
+        {
+            std::ostringstream oss;
+            oss << "Cannot operator+=(), sizes do not match: lhs: " << tensor::dim_str(dimensions_) << ", rhs: " << tensor::dim_str(rhs.dimensions_);
+            throw std::length_error(oss.str());
+        }
         for (auto ix = 0u; ix < size_; ++ix)
             data_[ix] += rhs.data_[ix];
         return *this;
@@ -144,7 +150,12 @@ namespace gubg {
     template <typename Rhs>
     typename Tensor<T>::Self &Tensor<T>::operator-=(const Rhs &rhs)
     {
-        assert(dimensions_ == rhs.dimensions_);
+        if (dimensions_ != rhs.dimensions_)
+        {
+            std::ostringstream oss;
+            oss << "Cannot operator-=(), sizes do not match: lhs: " << tensor::dim_str(dimensions_) << ", rhs: " << tensor::dim_str(rhs.dimensions_);
+            throw std::length_error(oss.str());
+        }
         for (auto ix = 0u; ix < size_; ++ix)
             data_[ix] -= rhs.data_[ix];
         return *this;
