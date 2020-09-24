@@ -107,4 +107,18 @@ TEST_CASE("Tensor tests", "[ut][Tensor]")
             std::cout << t << std::endl;
         REQUIRE(t == T({2,2}, {0,-1, -1,0}));
     }
+    SECTION("resize()")
+    {
+        t = T({2,3});
+        REQUIRE_NOTHROW(t.reshape({3,2}));
+        REQUIRE_THROWS_AS(t.reshape({2,2}), std::out_of_range);
+    }
+    SECTION("resize()")
+    {
+        t = T({2,3});
+        t.resize({3,2});
+        REQUIRE(t.size() == 6);
+        t.resize({2,2});
+        REQUIRE(t.size() == 4);
+    }
 }

@@ -7,6 +7,8 @@
 #include <ostream>
 #include <algorithm>
 #include <cassert>
+#include <stdexcept>
+#include <sstream>
 
 #include <iostream>
 
@@ -44,12 +46,16 @@ namespace gubg {
         const std::size_t size() const {return size_;}
         const Dimensions &dimensions() const {return dimensions_;}
 
+        Self &reshape(std::initializer_list<std::size_t> dimensions);
+        Self &resize(std::initializer_list<std::size_t> dimensions);
+
         template <typename Ftor>
         void broadcast(Ftor &&ftor);
 
         void stream(std::ostream &os) const;
 
     private:
+        static std::size_t data_size_(const Dimensions &dimensions);
         void process_new_dimensions_();
 
         Dimensions dimensions_;
@@ -145,6 +151,29 @@ namespace gubg {
     }
 
     template <typename T>
+    typename Tensor<T>::Self &Tensor<T>::reshape(std::initializer_list<std::size_t> dimensions)
+    {
+        Dimensions new_dimensions = dimensions;
+        const auto size = data_size_(new_dimensions);
+        if (size != size_)
+        {
+            std::ostringstream oss;
+            oss << "Cannot reshape Tensor, total size does not match: old size: " << size_ << " new size: " << size;
+            throw std::out_of_range(oss.str());
+        }
+        dimensions_.swap(new_dimensions);
+        process_new_dimensions_();
+        return *this;
+    }
+    template <typename T>
+    typename Tensor<T>::Self &Tensor<T>::resize(std::initializer_list<std::size_t> dimensions)
+    {
+        dimensions_ = dimensions;
+        process_new_dimensions_();
+        return *this;
+    }
+
+    template <typename T>
     template <typename Ftor>
     void Tensor<T>::broadcast(Ftor &&ftor)
     {
@@ -223,11 +252,17 @@ namespace gubg {
 
     //Private method implementation
     template <typename T>
+    std::size_t Tensor<T>::data_size_(const Dimensions &dimensions)
+    {
+        std::size_t size = 1;
+        for (auto dimsize: dimensions)
+            size *= dimsize;
+        return size;
+    }
+    template <typename T>
     void Tensor<T>::process_new_dimensions_()
     {
-        size_ = 1;
-        for (auto dimsize: dimensions_)
-            size_ *= dimsize;
+        size_ = data_size_(dimensions_);
 
         {
             std::size_t stride = 1;
