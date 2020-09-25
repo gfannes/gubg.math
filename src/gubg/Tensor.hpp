@@ -33,6 +33,7 @@ namespace gubg {
         //due to the comma operator iso the expected matrix[{1,2}]
         //T &operator[](std::size_t ix);
         T &operator[](std::initializer_list<std::size_t> ixs);
+        const T &operator[](std::initializer_list<std::size_t> ixs) const;
 
         template <typename Rhs>
         bool operator==(const Rhs &rhs) const;
@@ -106,6 +107,20 @@ namespace gubg {
 
     template <typename T>
     T &Tensor<T>::operator[](std::initializer_list<std::size_t> ixs)
+    {
+        const auto nr_dims = dimensions_.size();
+        assert(ixs.size() == nr_dims);
+        std::size_t my_ix = 0;
+        auto stride_it = strides_.begin();
+        for (auto ix: ixs)
+        {
+            my_ix += *stride_it*ix;
+            ++stride_it;
+        }
+        return data_[my_ix];
+    }
+    template <typename T>
+    const T &Tensor<T>::operator[](std::initializer_list<std::size_t> ixs) const
     {
         const auto nr_dims = dimensions_.size();
         assert(ixs.size() == nr_dims);

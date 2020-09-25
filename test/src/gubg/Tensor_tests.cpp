@@ -1,4 +1,5 @@
 #include <gubg/Tensor.hpp>
+#include <gubg/tensor/dot.hpp>
 #include <catch.hpp>
 #include <iostream>
 
@@ -122,5 +123,41 @@ TEST_CASE("Tensor tests", "[ut][Tensor]")
         REQUIRE(t.size() == 6);
         t.resize({2,2});
         REQUIRE(t.size() == 4);
+    }
+    SECTION("dot()")
+    {
+        SECTION("{} x {}")
+        {
+            T a({}, {2});
+            T b({}, {3});
+            T c;
+            gubg::tensor::dot(c, a, b);
+            if (do_log)
+                std::cout << c << std::endl;
+            REQUIRE(c[{}] == 6);
+        }
+        SECTION("{} x {1}")
+        {
+            T a({}, {2});
+            T b({1}, {3});
+            T c;
+            REQUIRE_THROWS_AS(gubg::tensor::dot(c, a, b), std::out_of_range);
+        }
+        SECTION("{3,2} x {4,2}")
+        {
+            T a({3,2}, {0,1,2,3});
+            T b({4,2}, {4,5,6,7,8,9,10,11});
+            T c;
+            REQUIRE_THROWS_AS(gubg::tensor::dot(c, a, b), std::out_of_range);
+        }
+#if 0
+        SECTION("{3,2} x {2,4}")
+        {
+            T a({3,2}, {0,1,2,3});
+            T b({2,4}, {4,5,6,7,8,9,10,11});
+            T c;
+            gubg::tensor::dot(c, a, b);
+        }
+#endif
     }
 }
