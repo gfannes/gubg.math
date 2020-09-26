@@ -17,23 +17,40 @@ TEST_CASE("Tensor tests", "[ut][Tensor]")
     }
     SECTION("ctor")
     {
+        SECTION("from initializer_list")
         {
-            t = T{{2,3}};
-            REQUIRE(t.size() == 6);
-            if (do_log)
-                std::cout << t << std::endl;
+            SECTION("no data")
+            {
+                t = T{{2,3}};
+                REQUIRE(t.size() == 6);
+                if (do_log)
+                    std::cout << t << std::endl;
+            }
+            SECTION("correct amount of data")
+            {
+                t = T{{2,2,3}, {0,1,2,3,4,5,6,7,8,9,10,11}};
+                REQUIRE(t.size() == 12);
+                if (do_log)
+                    std::cout << t << std::endl;
+            }
+            SECTION("not enough data")
+            {
+                t = T{{2,3}, {0,1,2,3}};
+                REQUIRE(t.size() == 6);
+                if (do_log)
+                    std::cout << t << std::endl;
+            }
         }
+        SECTION("from tensor::Dimensions")
         {
-            t = T{{2,3}, {0,1,2,3}};
-            REQUIRE(t.size() == 6);
-            if (do_log)
-                std::cout << t << std::endl;
-        }
-        {
-            t = T{{2,2,3}, {0,1,2,3,4,5,6,7,8,9,10,11}};
-            REQUIRE(t.size() == 12);
-            if (do_log)
-                std::cout << t << std::endl;
+            SECTION("no data")
+            {
+                gubg::tensor::Dimensions dims = {2,3};
+                t = T{dims};
+                REQUIRE(t.size() == 6);
+                if (do_log)
+                    std::cout << t << std::endl;
+            }
         }
     }
     SECTION("zeros() small")
