@@ -1,13 +1,14 @@
-#include <gubg/Tensor.hpp>
+#include <gubg/tensor/Tensor.hpp>
 #include <gubg/tensor/dot.hpp>
 #include <catch.hpp>
 #include <iostream>
+using namespace gubg;
 
-TEST_CASE("Tensor tests", "[ut][Tensor]")
+TEST_CASE("Tensor tests", "[ut][tensor][Tensor]")
 {
     const auto do_log = true;
 
-    using T = gubg::Tensor<int>;
+    using T = tensor::Tensor<int>;
     T t;
 
     SECTION("fresh")
@@ -41,11 +42,11 @@ TEST_CASE("Tensor tests", "[ut][Tensor]")
                     std::cout << t << std::endl;
             }
         }
-        SECTION("from tensor::Dimensions")
+        SECTION("from Dimensions")
         {
             SECTION("no data")
             {
-                gubg::tensor::Dimensions dims = {2,3};
+                tensor::Dimensions dims = {2,3};
                 t = T{dims};
                 REQUIRE(t.size() == 6);
                 if (do_log)
@@ -148,7 +149,7 @@ TEST_CASE("Tensor tests", "[ut][Tensor]")
             T a({}, {2});
             T b({}, {3});
             T c;
-            gubg::tensor::dot(c, a, b);
+            tensor::dot(c, a, b);
             if (do_log)
                 std::cout << c << std::endl;
             REQUIRE(c[{}] == 6);
@@ -158,14 +159,14 @@ TEST_CASE("Tensor tests", "[ut][Tensor]")
             T a({}, {2});
             T b({1}, {3});
             T c;
-            REQUIRE_THROWS_AS(gubg::tensor::dot(c, a, b), std::out_of_range);
+            REQUIRE_THROWS_AS(tensor::dot(c, a, b), std::out_of_range);
         }
         SECTION("{3,2} x {4,2}")
         {
             T a({3,2}, {0,1,2,3});
             T b({4,2}, {4,5,6,7,8,9,10,11});
             T c;
-            REQUIRE_THROWS_AS(gubg::tensor::dot(c, a, b), std::out_of_range);
+            REQUIRE_THROWS_AS(tensor::dot(c, a, b), std::out_of_range);
         }
 #if 0
         SECTION("{3,2} x {2,4}")
@@ -173,7 +174,7 @@ TEST_CASE("Tensor tests", "[ut][Tensor]")
             T a({3,2}, {0,1,2,3});
             T b({2,4}, {4,5,6,7,8,9,10,11});
             T c;
-            gubg::tensor::dot(c, a, b);
+            tensor::dot(c, a, b);
         }
 #endif
     }

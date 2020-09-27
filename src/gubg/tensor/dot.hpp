@@ -1,7 +1,7 @@
 #ifndef HEADER_gubg_tensor_dot_hpp_ALREADY_INCLUDED
 #define HEADER_gubg_tensor_dot_hpp_ALREADY_INCLUDED
 
-#include <gubg/Tensor.hpp>
+#include <gubg/tensor/Tensor.hpp>
 #include <stdexcept>
 
 namespace gubg { namespace tensor { 

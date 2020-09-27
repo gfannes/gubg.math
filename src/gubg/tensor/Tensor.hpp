@@ -1,5 +1,5 @@
-#ifndef HEADER_gubg_Tensor_hpp_ALREADY_INCLUDED
-#define HEADER_gubg_Tensor_hpp_ALREADY_INCLUDED
+#ifndef HEADER_gubg_tensor_Tensor_hpp_ALREADY_INCLUDED
+#define HEADER_gubg_tensor_Tensor_hpp_ALREADY_INCLUDED
 
 #include <gubg/tensor/types.hpp>
 #include <gubg/tensor/each.hpp>
@@ -13,14 +13,12 @@
 
 #include <iostream>
 
-namespace gubg { 
+namespace gubg { namespace tensor { 
 
     template <typename T>
     class Tensor
     {
     public:
-        using Dimensions = tensor::Dimensions;
-        using Index = tensor::Index;
         using Data = std::vector<T>;
         using Self = Tensor<T>;
 
@@ -65,7 +63,7 @@ namespace gubg {
 
         Dimensions dimensions_;
 
-        tensor::Strides strides_;
+        Strides strides_;
         std::size_t size_;
         Data data_;
     };
@@ -174,7 +172,7 @@ namespace gubg {
         if (dimensions_ != rhs.dimensions_)
         {
             std::ostringstream oss;
-            oss << "Cannot operator+=(), sizes do not match: lhs: " << tensor::dim_str(dimensions_) << ", rhs: " << tensor::dim_str(rhs.dimensions_);
+            oss << "Cannot operator+=(), sizes do not match: lhs: " << dim_str(dimensions_) << ", rhs: " << dim_str(rhs.dimensions_);
             throw std::length_error(oss.str());
         }
         for (auto ix = 0u; ix < size_; ++ix)
@@ -188,7 +186,7 @@ namespace gubg {
         if (dimensions_ != rhs.dimensions_)
         {
             std::ostringstream oss;
-            oss << "Cannot operator-=(), sizes do not match: lhs: " << tensor::dim_str(dimensions_) << ", rhs: " << tensor::dim_str(rhs.dimensions_);
+            oss << "Cannot operator-=(), sizes do not match: lhs: " << dim_str(dimensions_) << ", rhs: " << dim_str(rhs.dimensions_);
             throw std::length_error(oss.str());
         }
         for (auto ix = 0u; ix < size_; ++ix)
@@ -292,7 +290,7 @@ namespace gubg {
                     break;
             }
         };
-        tensor::each_index(dimensions_, nr_dims, lambda);
+        each_index(dimensions_, nr_dims, lambda);
         assert(ptr == data_.data()+data_.size());
     }
 
@@ -330,6 +328,6 @@ namespace gubg {
         return os;
     }
 
-} 
+} } 
 
 #endif
