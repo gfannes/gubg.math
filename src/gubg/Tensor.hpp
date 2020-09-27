@@ -20,20 +20,23 @@ namespace gubg {
     {
     public:
         using Dimensions = tensor::Dimensions;
+        using Index = tensor::Index;
+        using Data = std::vector<T>;
         using Self = Tensor<T>;
 
         Tensor();
-        Tensor(std::initializer_list<std::size_t> dimensions, std::initializer_list<T> data = {});
+        Tensor(const Dimensions  & dimensions);
+        Tensor(const Dimensions  & dimensions, Data data);
 
-        static Self zeros(std::initializer_list<std::size_t> dimensions);
-        static Self ones(std::initializer_list<std::size_t> dimensions);
+        static Self zeros(const Dimensions & dimensions);
+        static Self ones(const Dimensions & dimensions);
         static Self eye(std::size_t dimension);
 
         //operator[](std::size_t ix) is not provided since it leads to errors with matrix[1,2] being interpreted to matrix[2]
         //due to the comma operator iso the expected matrix[{1,2}]
         //T &operator[](std::size_t ix);
-        T &operator[](std::initializer_list<std::size_t> ixs);
-        const T &operator[](std::initializer_list<std::size_t> ixs) const;
+        T &operator[](const Index & ixs);
+        const T &operator[](const Index & ixs) const;
 
         template <typename Rhs>
         bool operator==(const Rhs &rhs) const;
@@ -46,10 +49,10 @@ namespace gubg {
         Self &operator-=(const Rhs &rhs);
 
         const std::size_t size() const {return size_;}
-        const Dimensions &dimensions() const {return dimensions_;}
+        const Dimensions & dimensions() const {return dimensions_;}
 
-        Self &reshape(std::initializer_list<std::size_t> dimensions);
-        Self &resize(std::initializer_list<std::size_t> dimensions);
+        Self &reshape(const Dimensions & dimensions);
+        Self &resize(const Dimensions & dimensions);
 
         template <typename Ftor>
         void broadcast(Ftor &&ftor);
@@ -57,40 +60,57 @@ namespace gubg {
         void stream(std::ostream &os) const;
 
     private:
-        static std::size_t data_size_(const Dimensions &dimensions);
+        static std::size_t data_size_(const Dimensions & dimensions);
         void process_new_dimensions_();
 
         Dimensions dimensions_;
 
         tensor::Strides strides_;
         std::size_t size_;
-        std::vector<T> data_;
+        Data data_;
     };
 
 
     //Public method implementation
+    //
+    //Constructors
     template <typename T>
     Tensor<T>::Tensor()
     {
         process_new_dimensions_();
         data_.resize(size_);
     }
-
     template <typename T>
-    Tensor<T>::Tensor(std::initializer_list<std::size_t> dimensions, std::initializer_list<T> data)
-    : dimensions_(dimensions), data_(data)
+    Tensor<T>::Tensor(const Dimensions & dimensions)
+    : dimensions_(dimensions)
     {
         process_new_dimensions_();
         data_.resize(size_);
     }
+    template <typename T>
+    Tensor<T>::Tensor(const Dimensions & dimensions, Data data)
+    : dimensions_(dimensions)
+    {
+        process_new_dimensions_();
+        if (data.size() == size_)
+            data_.swap(data);
+        else
+        {
+            data_.resize(size_);
+            const auto *src = &data[0];
+            auto *dst = &data_[0];
+            const auto nr_to_copy = std::min(size_, data.size());
+            std::copy(src, src+nr_to_copy, dst);
+        }
+    }
 
     template <typename T>
-    typename Tensor<T>::Self Tensor<T>::zeros(std::initializer_list<std::size_t> dimensions)
+    typename Tensor<T>::Self Tensor<T>::zeros(const Dimensions & dimensions)
     {
         return Self{dimensions};
     }
     template <typename T>
-    typename Tensor<T>::Self Tensor<T>::ones(std::initializer_list<std::size_t> dimensions)
+    typename Tensor<T>::Self Tensor<T>::ones(const Dimensions & dimensions)
     {
         Self t{dimensions};
         std::fill(t.data_.begin(), t.data_.end(), 1);
@@ -106,7 +126,7 @@ namespace gubg {
     }
 
     template <typename T>
-    T &Tensor<T>::operator[](std::initializer_list<std::size_t> ixs)
+    T &Tensor<T>::operator[](const Index & ixs)
     {
         const auto nr_dims = dimensions_.size();
         assert(ixs.size() == nr_dims);
@@ -120,7 +140,7 @@ namespace gubg {
         return data_[my_ix];
     }
     template <typename T>
-    const T &Tensor<T>::operator[](std::initializer_list<std::size_t> ixs) const
+    const T &Tensor<T>::operator[](const Index & ixs) const
     {
         const auto nr_dims = dimensions_.size();
         assert(ixs.size() == nr_dims);
@@ -177,7 +197,7 @@ namespace gubg {
     }
 
     template <typename T>
-    typename Tensor<T>::Self &Tensor<T>::reshape(std::initializer_list<std::size_t> dimensions)
+    typename Tensor<T>::Self &Tensor<T>::reshape(const Dimensions & dimensions)
     {
         Dimensions new_dimensions = dimensions;
         const auto size = data_size_(new_dimensions);
@@ -192,7 +212,7 @@ namespace gubg {
         return *this;
     }
     template <typename T>
-    typename Tensor<T>::Self &Tensor<T>::resize(std::initializer_list<std::size_t> dimensions)
+    typename Tensor<T>::Self &Tensor<T>::resize(const Dimensions & dimensions)
     {
         dimensions_ = dimensions;
         process_new_dimensions_();
@@ -278,7 +298,7 @@ namespace gubg {
 
     //Private method implementation
     template <typename T>
-    std::size_t Tensor<T>::data_size_(const Dimensions &dimensions)
+    std::size_t Tensor<T>::data_size_(const Dimensions & dimensions)
     {
         std::size_t size = 1;
         for (auto dimsize: dimensions)
