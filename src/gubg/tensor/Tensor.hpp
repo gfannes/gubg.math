@@ -19,6 +19,7 @@ namespace gubg { namespace tensor {
     class Tensor
     {
     public:
+        using value_type = T;
         using Data = std::vector<T>;
         using Self = Tensor<T>;
 
@@ -54,6 +55,11 @@ namespace gubg { namespace tensor {
 
         template <typename Ftor>
         void broadcast(Ftor &&ftor);
+
+        void fill(T v = T{});
+
+        T *data();
+        const T *data() const;
 
         void stream(std::ostream &os) const;
 
@@ -214,6 +220,7 @@ namespace gubg { namespace tensor {
     {
         dimensions_ = dimensions;
         process_new_dimensions_();
+        data_.resize(size_);
         return *this;
     }
 
@@ -223,6 +230,23 @@ namespace gubg { namespace tensor {
     {
         for (auto &v: data_)
             v = ftor(v);
+    }
+
+    template <typename T>
+    void Tensor<T>::fill(T v)
+    {
+        std::fill(data_.begin(), data_.end(), v);
+    }
+
+    template <typename T>
+    T *Tensor<T>::data()
+    {
+        return data_.data();
+    }
+    template <typename T>
+    const T *Tensor<T>::data() const
+    {
+        return data_.data();
     }
 
     template <typename T>

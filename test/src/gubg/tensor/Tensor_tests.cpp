@@ -142,6 +142,35 @@ TEST_CASE("Tensor tests", "[ut][tensor][Tensor]")
         t.resize({2,2});
         REQUIRE(t.size() == 4);
     }
+    SECTION("fill")
+    {
+        t = T::ones({2,2});
+        SECTION("default T{}")
+        {
+            t.fill();
+        }
+        SECTION("explicit 0")
+        {
+            t.fill(0);
+        }
+        REQUIRE(t == T::zeros({2,2}));
+    }
+    SECTION("data()")
+    {
+        t = T::eye(3);
+        auto ptr = t.data();
+        REQUIRE(*ptr++ == 1);
+        REQUIRE(*ptr++ == 0);
+        REQUIRE(*ptr++ == 0);
+
+        REQUIRE(*ptr++ == 0);
+        REQUIRE(*ptr++ == 1);
+        REQUIRE(*ptr++ == 0);
+
+        REQUIRE(*ptr++ == 0);
+        REQUIRE(*ptr++ == 0);
+        REQUIRE(*ptr++ == 1);
+    }
     SECTION("dot()")
     {
         SECTION("{} x {}")
@@ -163,19 +192,37 @@ TEST_CASE("Tensor tests", "[ut][tensor][Tensor]")
         }
         SECTION("{3,2} x {4,2}")
         {
-            T a({3,2}, {0,1,2,3});
-            T b({4,2}, {4,5,6,7,8,9,10,11});
+            T a({3,2}, {0,1,2,3,4,5});
+            T b({4,2}, {6,7,8,9,10,11,12,13});
             T c;
             REQUIRE_THROWS_AS(tensor::dot(c, a, b), std::out_of_range);
         }
-#if 0
         SECTION("{3,2} x {2,4}")
         {
-            T a({3,2}, {0,1,2,3});
-            T b({2,4}, {4,5,6,7,8,9,10,11});
+            T a({3,2}, {0,1,2,3,4,5});
+            T b({2,4}, {6,7,8,9,10,11,12,13});
             T c;
             tensor::dot(c, a, b);
+            if (do_log)
+                std::cout << c << std::endl;
         }
-#endif
+        SECTION("{2,3,2} x {2,4}")
+        {
+            T a({2,3,2}, {0,1,2,3,4,5,6,7,8,9,10,11});
+            T b({2,4}, {6,7,8,9,10,11,12,13});
+            T c;
+            tensor::dot(c, a, b);
+            if (do_log)
+                std::cout << c << std::endl;
+        }
+        SECTION("{3,2} x {2,2,2}")
+        {
+            T a({3,2}, {0,1,2,3,4,5});
+            T b({2,2,2}, {6,7,8,9,10,11,12,13});
+            T c;
+            tensor::dot(c, a, b);
+            if (do_log)
+                std::cout << c << std::endl;
+        }
     }
 }
