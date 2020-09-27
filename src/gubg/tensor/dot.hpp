@@ -7,6 +7,7 @@
 
 namespace gubg { namespace tensor { 
 
+    //Computes inproduct on last dimension of lhs and first dimension of rhs
     template <typename Dst, typename Lhs, typename Rhs>
     void dot(Tensor<Dst> &dst, const Tensor<Lhs> &lhs, const Tensor<Rhs> &rhs)
     {
