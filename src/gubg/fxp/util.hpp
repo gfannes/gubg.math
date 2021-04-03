@@ -20,16 +20,6 @@ namespace gubg { namespace fxp {
             return std::pow(base, exp);
         }
 
-        template <typename Repr, int Exp>
-        constexpr Repr multiplication_offset()
-        {
-            //TODO: investigate this a bit better
-            if (Exp < 0)
-                return 1 << (-(Exp+1));
-            if (Exp >= 0)
-                return 0;
-        }
-
     } 
 
 } } 

@@ -32,11 +32,14 @@ namespace gubg { namespace fxp {
         Self operator*(const Self &rhs) const
         {
             if constexpr (Exp < 0)
-                return Self{(repr_*rhs.repr_+multiplication_offset_) >> -Exp};
+            {
+                constexpr Repr preshift_rounding = 1 << -(Exp+1);
+                return Self{(repr_*rhs.repr_+preshift_rounding) >> -Exp};
+            }
             if constexpr (Exp == 0)
                 return Self{repr_*rhs.repr_};
             if constexpr (Exp > 0)
-                return Self{(repr_*rhs.repr_+multiplication_offset_) << Exp};
+                return Self{(repr_*rhs.repr_) << Exp};
         }
 
         void stream(std::ostream &os) const
@@ -47,7 +50,6 @@ namespace gubg { namespace fxp {
     private:
         static constexpr double to_flt_factor_ =  util::pow(2.0, Exp);
         static constexpr double to_repr_factor_ = util::pow(2.0, -Exp);
-        static constexpr Repr multiplication_offset_ = util::multiplication_offset<Repr, Exp>();
 
         Number(Repr repr): repr_(repr) {}
 
