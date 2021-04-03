@@ -6,10 +6,13 @@
 
 namespace gubg { namespace fxp { 
 
+    //number = repr*2^exp
+
     template <unsigned int Width, int Exp>
     class Number
     {
     public:
+        using Self = Number<Width, Exp>;
         using Repr = typename util::Repr<Width>::Type;
 
         Number() {}
@@ -24,6 +27,18 @@ namespace gubg { namespace fxp {
         template <typename Flt>
         void set(Flt flt) { repr_ = std::round(to_repr_factor_*flt); }
 
+        Self operator+(const Self &rhs) const { return Self{repr_+rhs.repr_}; }
+        Self operator-(const Self &rhs) const { return Self{repr_-rhs.repr_}; }
+        Self operator*(const Self &rhs) const
+        {
+            if constexpr (Exp < 0)
+                return Self{(repr_*rhs.repr_+multiplication_offset_) >> -Exp};
+            if constexpr (Exp == 0)
+                return Self{repr_*rhs.repr_};
+            if constexpr (Exp > 0)
+                return Self{(repr_*rhs.repr_+multiplication_offset_) << Exp};
+        }
+
         void stream(std::ostream &os) const
         {
             os << "[fxp::Number](width:" << Width << ")(exp:" << Exp << ")(repr:" << repr_ << ")";
@@ -32,6 +47,9 @@ namespace gubg { namespace fxp {
     private:
         static constexpr double to_flt_factor_ =  util::pow(2.0, Exp);
         static constexpr double to_repr_factor_ = util::pow(2.0, -Exp);
+        static constexpr Repr multiplication_offset_ = util::multiplication_offset<Repr, Exp>();
+
+        Number(Repr repr): repr_(repr) {}
 
         Repr repr_ = 0;
     };
