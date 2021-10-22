@@ -48,13 +48,18 @@ namespace gubg { namespace fxp {
         }
 
     private:
-        static constexpr double to_flt_factor_ =  util::pow(2.0, Exp);
-        static constexpr double to_repr_factor_ = util::pow(2.0, -Exp);
+        static const double to_flt_factor_;
+        static const double to_repr_factor_;
 
         Number(Repr repr): repr_(repr) {}
 
         Repr repr_ = 0;
     };
+
+    template <unsigned int Width, int Exp>
+    const double Number<Width, Exp>::to_flt_factor_ = util::pow(2.0, Exp);
+    template <unsigned int Width, int Exp>
+    const double Number<Width, Exp>::to_repr_factor_ = util::pow(2.0, -Exp);
 
     template <unsigned int Width, int Exp>
     std::ostream &operator<<(std::ostream &os, const Number<Width, Exp> &nbr)
