@@ -12,13 +12,14 @@ namespace gubg { namespace prob {
         Bernoulli() {}
         Bernoulli(double prob_true): prob_true_(prob_true) {}
 
-        void set_prob(double prob_true) {prob_true_ = prob_true;}
+        Bernoulli &set_prob(double prob_true) {prob_true_ = prob_true; return *this;}
 
-        bool operator()() const { return uniform_(rng()) <= prob_true_; }
+        bool operator()() const { return uniform_(rng_) <= prob_true_; }
 
     private:
         double prob_true_ = 0.5;
         mutable std::uniform_real_distribution<double> uniform_{0.0, 1.0};
+        mutable std::mt19937 rng_ = rng();
     };
 
     template <typename T>
