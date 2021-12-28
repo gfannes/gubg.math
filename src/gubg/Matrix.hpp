@@ -1,8 +1,8 @@
 #ifndef HEADER_gubg_Matrix_hpp_ALREADY_INCLUDED
 #define HEADER_gubg_Matrix_hpp_ALREADY_INCLUDED
 
-#include "gubg/Range.hpp"
-#include "gubg/mss.hpp"
+#include <gubg/Range.hpp>
+#include <gubg/mss.hpp>
 #include <vector>
 #include <algorithm>
 #include <numeric>
@@ -71,6 +71,12 @@ namespace gubg {
 
                 T get(size_t rix, size_t cix) const {return elements_[rix*nr_cols_+cix];}
                 void set(size_t rix, size_t cix, T v) {elements_[rix*nr_cols_+cix] = v;}
+
+                Range<T*> row(size_t rix)
+                {
+                    T *ptr = elements_.data()+rix*nr_cols_;
+                    return Range<T*>{ptr, ptr+nr_cols_};
+                }
 
                 template <typename TT, typename Left, typename Right>
                     bool multiply(TT &v, const Left &left, const Right &right) const
