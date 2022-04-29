@@ -18,6 +18,7 @@ namespace  {
             case Case::MultSmall: return "MultSmall";
             case Case::MultLarge: return "MultLarge";
         }
+        return nullptr;
     }
 
     template <int Exp>
